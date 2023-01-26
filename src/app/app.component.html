@@ -1,12 +1,6 @@
 <div class="po-wrapper">
   <po-toolbar p-title="Controle de Tarefas"></po-toolbar>
 
-  <po-menu
-    [p-filter]="true"
-    [p-collapsed]="true"
-    [p-menus]="menus"
-  >
-  </po-menu>
-
+  <po-menu [p-menus]="menus"></po-menu>
   <router-outlet></router-outlet>
 </div>
