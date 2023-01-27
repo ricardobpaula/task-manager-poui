@@ -1,0 +1,39 @@
+#include 'tlpp-core.th'
+#include 'tlpp-rest.th'
+
+Namespace ProtheusDev.Tasks.Controller
+
+Using Namespace ProtheusDev.Tasks.Service
+
+Class TaskController
+  Private Data oService as Object
+
+  Public Method New() Constructor
+  @Post("/v1/tasks")
+  Public Method Create()
+EndClass
+
+Method New() Class TaskController
+  self:oService := TaskService():New()
+return
+
+Method Create() Class TaskController
+  Local jBody     := JsonObject():New() as Json
+  Local jResponse := JsonObject():New() as Json
+  Local jResult as Json
+
+  jBody:FromJson(oRest:GetBodyRequest())
+
+  jResult := self:oService:Create(jBody)
+
+  If jResult['error']
+    jResponse['message'] := jResult['message']
+
+    oRest:SetFault(jResponse:ToJson())
+    oRest:SetStatusCode(500)
+  else
+    oRest:SetFault(jResponse:ToJson())
+    oRest:SetStatusCode(201)
+  endif
+
+return
