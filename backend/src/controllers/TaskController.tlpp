@@ -19,6 +19,9 @@ Class TaskController
   @Get("/v1/tasks/:id")
   Public Method Get()
 
+  @Delete("/v1/tasks/:id")
+  Public Method Delete()
+
   Private Method Destroy()
 EndClass
 
@@ -71,22 +74,57 @@ return
 
 Method Get() Class TaskController
   Local jResponse as Json
+  Local jResult as Json
   Local jPath as Json
 
   jPath := oRest:getPathParamsRequest()
 
-  jResponse := ::oService:Get(jPath['id'])
+  if len(jPath["id"]) == TamSx3("Z1_CODIGO")[1]
+    jResult := ::oService:Get(jPath['id'])
+  endif
 
-  if jResponse != nil
+  jResponse := iif(jResult != nil,jResult,{"status": "error", "message": "Tarefa não encontrada!"})
+
+  if jResult != nil
     oRest:SetResponse(jResponse:ToJson())
     oRest:SetStatusCode(200)
   else
-    oRest:SetFault({"status": "error", "message": "Task not found!"})
+    oRest:SetFault(jResponse:ToJson())
     oRest:SetStatusCode(404)
   endif
 
   ::Destroy()
   FreeObj(jResponse)
+  FreeObj(jResult)
+  FreeObj(jPath)
+
+return
+
+Method Delete() Class TaskController
+  Local jResponse as Json
+  Local jResult as Json
+  Local jPath as Json
+
+  jPath := oRest:getPathParamsRequest()
+
+  if len(jPath["id"]) == TamSx3("Z1_CODIGO")[1]
+    jResult := ::oService:Delete(jPath['id'])
+  else
+    jResult := {"error": .T., "message": "Tarefa não foi encontrada!"}
+  endif
+
+  if jResult["error"]
+    jResponse := {"status": "error", "message": jResult["message"]}
+    oRest:SetFault(jResponse:ToJson())
+    oRest:SetStatusCode(404)
+  else
+    oRest:SetResponse(nil)
+    oRest:SetStatusCode(200)
+  endif
+
+  ::Destroy()
+  FreeObj(jResponse)
+  FreeObj(jResult)
   FreeObj(jPath)
 
 return
