@@ -16,6 +16,9 @@ Class TaskController
   @Get("/v1/tasks")
   Public Method List()
 
+  @Get("/v1/tasks/:id")
+  Public Method Get()
+
   Private Method Destroy()
 EndClass
 
@@ -63,5 +66,27 @@ Method List() Class TaskController
 
   ::Destroy()
   FreeObj(jResponse)
+
+return
+
+Method Get() Class TaskController
+  Local jResponse as Json
+  Local jPath as Json
+
+  jPath := oRest:getPathParamsRequest()
+
+  jResponse := ::oService:Get(jPath['id'])
+
+  if jResponse != nil
+    oRest:SetResponse(jResponse:ToJson())
+    oRest:SetStatusCode(200)
+  else
+    oRest:SetFault({"status": "error", "message": "Task not found!"})
+    oRest:SetStatusCode(404)
+  endif
+
+  ::Destroy()
+  FreeObj(jResponse)
+  FreeObj(jPath)
 
 return

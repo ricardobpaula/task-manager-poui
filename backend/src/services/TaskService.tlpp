@@ -8,6 +8,7 @@ Class TaskService
   Public Method New() Constructor
   Public Method Create(jTask as Json)
   Public Method List()
+  Public Method Get(cId as Character)
 EndClass
 
 Method New() Class TaskService
@@ -69,6 +70,30 @@ Method List() Class TaskService
   (cAlias)->(DbCloseArea())
 
   jResult:Set(aResult)
+
+  FWRestArea(aArea)
+  FWRestArea(aAreaSZ1)
+return jResult
+
+Method Get(cId as Character) Class TaskService
+  Local aArea     := FWGetArea() as Array
+  Local aAreaSZ1  := SZ1->(FWGetArea()) as Array
+  Local jResult as Json
+
+  DbSelectArea("SZ1")
+  SZ1->(DbSetOrder(1))
+  SZ1->(DbGoTop())
+
+  If SZ1->(Msseek(FWxFilial("SZ1") + cId))
+    jResult   := JsonObject():New()
+
+    jResult['code']         := SZ1->Z1_CODIGO
+    jResult['name']         := AllTrim(SZ1->Z1_NOME)
+    jResult['description']  := AllTrim(SZ1->Z1_DESC)
+    jResult['done']         := SZ1->Z1_FEITO
+  endif
+
+  SZ1->(DbCloseArea())
 
   FWRestArea(aArea)
   FWRestArea(aAreaSZ1)
