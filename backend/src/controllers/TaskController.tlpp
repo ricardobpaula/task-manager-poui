@@ -22,6 +22,9 @@ Class TaskController
   @Delete("/v1/tasks/:id")
   Public Method Delete()
 
+  @Put("/v1/tasks/:id")
+  Public Method Update()
+
   Private Method Destroy()
 EndClass
 
@@ -35,21 +38,52 @@ return
 
 Method Create() Class TaskController
   Local jBody     := JsonObject():New() as Json
-  Local jResponse := JsonObject():New() as Json
+  Local jResponse as Json
   Local jResult as Json
 
   jBody:FromJson(oRest:GetBodyRequest())
 
-  jResult := ::oService:Create(jBody)
+  jResult := ::oService:CreateOrUpdate(jBody)
 
   If jResult['error']
-    jResponse['message'] := jResult['message']
-
+    jResponse := {"status": "error", "message": jResult['message']}
     oRest:SetFault(jResponse:ToJson())
     oRest:SetStatusCode(500)
   else
-    oRest:SetResponse(jResponse:ToJson())
+    oRest:SetResponse(nil)
     oRest:SetStatusCode(201)
+  endif
+
+  ::Destroy()
+  FreeObj(jBody)
+  FreeObj(jResult)
+  FreeObj(jResponse)
+
+return
+
+Method Update() Class TaskController
+  Local jBody     := JsonObject():New() as Json
+  Local jResponse as Json
+  Local jPath as Json
+  Local jResult as Json
+
+  jBody:FromJson(oRest:GetBodyRequest())
+
+  jPath := oRest:getPathParamsRequest()
+
+  if len(jPath["id"]) == TamSx3("Z1_CODIGO")[1]
+    jResult := ::oService:CreateOrUpdate(jBody, jPath["id"])
+  else
+    jResult := {"error": .T., "message": "Tarefa não foi encontrada!"}
+  endif
+
+  If jResult['error']
+    jResponse := {"status": "error", "message": jResult['message']}
+    oRest:SetFault(jResponse:ToJson())
+    oRest:SetStatusCode(500)
+  else
+    oRest:SetResponse(nil)
+    oRest:SetStatusCode(200)
   endif
 
   ::Destroy()

@@ -6,7 +6,7 @@ Namespace ProtheusDev.Tasks.Service
 
 Class TaskService
   Public Method New() Constructor
-  Public Method Create(jTask as Json)
+  Public Method CreateOrUpdate(jTask as Json, cId as Character)
   Public Method List()
   Public Method Get(cId as Character)
   Public Method Delete(cId as Character)
@@ -15,28 +15,50 @@ EndClass
 Method New() Class TaskService
 return
 
-Method Create(jTask as Json) Class TaskService
+Method CreateOrUpdate(jTask as Json, cId as Character) Class TaskService
   Local aArea     := FWGetArea() as Array
   Local aAreaSZ1  := SZ1->(FWGetArea()) as Array
   Local oModel    := FwLoadModel("XCADSZ1") as Object
   Local oModelSZ1 := oModel:GetModel("SZ1MASTER") as Object
   Local jResult   := JsonObject():New() as Json
+  Local lError    := .F.
+  Default cId     := nil
 
-  oModel:SetOperation(3)
-
-  oModel:Activate()
-
-  oModelSZ1:SetValue("Z1_NOME", jTask['name'])
-  oModelSZ1:SetValue("Z1_DESC", jTask['description'])
-
-  If oModel:VldData() .And. oModel:CommitData()
-    jResult['error'] := .F.
+  if cId == nil
+    oModel:SetOperation(3)
   else
-    jResult['error'] := .T.
-    jResult['message'] := oModel:GetErrorMessage()[6]
+    DbSelectArea("SZ1")
+    SZ1->(DbSetOrder(1))
+    SZ1->(DbGoTop())
+    lError := !SZ1->(MsSeek(FWxFilial("SZ1") + cId))
+    oModel:SetOperation(4)
   endif
 
-  oModel:DeActivate()
+  if !lError
+    oModel:Activate()
+
+    if cId != nil
+      oModelSZ1:SetValue("Z1_CODIGO", jTask['code'])
+      oModelSZ1:SetValue("Z1_FEITO", jTask['done'])
+    endif
+
+    oModelSZ1:SetValue("Z1_NOME", jTask['name'])
+    oModelSZ1:SetValue("Z1_DESC", jTask['description'])
+
+    If oModel:VldData() .And. oModel:CommitData()
+      jResult['error'] := .F.
+    else
+      jResult['error'] := .T.
+      jResult['message'] := oModel:GetErrorMessage()[6]
+    endif
+
+    oModel:DeActivate()
+
+  else
+    jResult['error'] := .T.
+    jResult['message'] := "Tarefa não encontrada!"
+  endif
+
   FreeObj(oModel)
   FreeObj(oModelSZ1)
 
@@ -126,6 +148,8 @@ Method Delete(cId as Character) Class TaskService
   endif
 
   SZ1->(DbCloseArea())
+
+  oModel:DeActivate()
 
   FreeObj(oModel)
   FWRestArea(aArea)
