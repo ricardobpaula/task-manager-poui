@@ -1,3 +1,25 @@
 {
-    "totvsLanguageServer.welcomePage": false
+    "totvsLanguageServer.welcomePage": false,
+    "totvsLanguageServer.folder.extensionsAllowed": [
+      ".PRW",
+      ".PRX",
+      ".PRG",
+      ".PPX",
+      ".PPP",
+      ".TLPP",
+      ".APW",
+      ".APH",
+      ".APL",
+      ".AHU",
+      ".TRES",
+      ".PNG",
+      ".BMP",
+      ".RES",
+      ".4GL",
+      ".PER",
+      ".JS",
+      ".RPTDESIGN",
+      ".APP"
+    ],
+    "totvsLanguageServer.workspaceServerConfig": true
 }

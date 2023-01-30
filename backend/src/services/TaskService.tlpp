@@ -2,9 +2,12 @@
 
 Namespace ProtheusDev.Tasks.Service
 
+#define c_ent CHR(13) + CHR(10)
+
 Class TaskService
   Public Method New() Constructor
   Public Method Create(jTask as Json)
+  Public Method List()
 EndClass
 
 Method New() Class TaskService
@@ -32,8 +35,40 @@ Method Create(jTask as Json) Class TaskService
   endif
 
   oModel:DeActivate()
-  FREEOBJ( oModel )
-  FREEOBJ( oModelSZ1 )
+  FreeObj(oModel)
+  FreeObj(oModelSZ1)
+
+  FWRestArea(aArea)
+  FWRestArea(aAreaSZ1)
+return jResult
+
+Method List() Class TaskService
+  Local aArea := FWGetArea() as Array
+  Local aAreaSZ1 := SZ1->(FWGetArea()) as Array
+  Local cQuery as Character
+  Local cAlias as Character
+  Local jResult := JsonObject():New() as Json
+  Local aResult := {} as Array
+
+  cQuery := "SELECT		Z1_CODIGO, Z1_NOME, Z1_FEITO" + c_ent
+  cQuery += "FROM		  SZ1990 " + c_ent
+  cQuery += "WHERE		D_E_L_E_T_ <> '*' " + c_ent
+
+  cAlias := MpSysOpenQuery(cQuery)
+
+  while (cAlias)->(!EOF())
+    aadd(aResult, {;
+      "code": (cAlias)->(Z1_CODIGO),;
+      "name": AllTrim((cAlias)->(Z1_NOME)),;
+      "description": "",;
+      "done": (cAlias)->(Z1_FEITO) == "T";
+    })
+    (cAlias)->(DbSkip())
+  enddo
+
+  (cAlias)->(DbCloseArea())
+
+  jResult:Set(aResult)
 
   FWRestArea(aArea)
   FWRestArea(aAreaSZ1)

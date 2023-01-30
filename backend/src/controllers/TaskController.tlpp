@@ -9,12 +9,22 @@ Class TaskController
   Private Data oService as Object
 
   Public Method New() Constructor
+
   @Post("/v1/tasks")
   Public Method Create()
+
+  @Get("/v1/tasks")
+  Public Method List()
+
+  Private Method Destroy()
 EndClass
 
 Method New() Class TaskController
-  self:oService := TaskService():New()
+  ::oService := TaskService():New()
+return
+
+Method Destroy() Class TaskController
+  FreeObj(::oService)
 return
 
 Method Create() Class TaskController
@@ -24,7 +34,7 @@ Method Create() Class TaskController
 
   jBody:FromJson(oRest:GetBodyRequest())
 
-  jResult := self:oService:Create(jBody)
+  jResult := ::oService:Create(jBody)
 
   If jResult['error']
     jResponse['message'] := jResult['message']
@@ -32,8 +42,26 @@ Method Create() Class TaskController
     oRest:SetFault(jResponse:ToJson())
     oRest:SetStatusCode(500)
   else
-    oRest:SetFault(jResponse:ToJson())
+    oRest:SetResponse(jResponse:ToJson())
     oRest:SetStatusCode(201)
   endif
+
+  ::Destroy()
+  FreeObj(jBody)
+  FreeObj(jResult)
+  FreeObj(jResponse)
+
+return
+
+Method List() Class TaskController
+  Local jResponse as Json
+
+  jResponse := ::oService:List()
+
+  oRest:SetResponse(jResponse:ToJson())
+  oRest:SetStatusCode(200)
+
+  ::Destroy()
+  FreeObj(jResponse)
 
 return
