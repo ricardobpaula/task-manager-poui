@@ -1,11 +1,13 @@
 <po-page-dynamic-search
   p-title="Lista de Tarefas"
+  [p-actions]="pageActions"
+  [p-breadcrumb]="breadcrumb"
 >
   <po-table
     [p-columns]="columns"
     [p-items]="tasks"
     [p-loading]="isLoading"
-    [p-actions]="actions"
+    [p-actions]="tableActions"
     [p-actions-right]="true"
   >
   </po-table>

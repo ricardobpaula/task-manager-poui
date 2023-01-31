@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { PoTableAction, PoTableColumn } from '@po-ui/ng-components';
+import { Router } from '@angular/router';
+import { PoBreadcrumb, PoPageAction, PoTableAction, PoTableColumn } from '@po-ui/ng-components';
 import { Task } from '../models/task';
 import { TaskService } from '../services/task.service';
 
@@ -13,20 +14,39 @@ export class ListTasksComponent {
   public tasks: Task[]
   public columns: PoTableColumn[]
   public isLoading: boolean
-  public actions: PoTableAction[]
+  public pageActions: PoPageAction[]
+  public tableActions: PoTableAction[]
+  public breadcrumb: PoBreadcrumb
 
-  constructor(private taskService: TaskService) {
+  constructor(
+    private taskService: TaskService,
+    private router: Router) {
     this.tasks = []
     this.isLoading = true
+
     this.columns = [
       { label: 'Nome', property: 'name', width: '70%'},
       { label: 'Concluido',property: 'done', type: 'boolean',
         boolean: { trueLabel: 'Concluido', falseLabel: 'Pendente' }
       }
     ]
-    this.actions = [{
+
+    this.pageActions = [
+      {
+        label: 'Nova Tarefa',
+        action: () => this.router.navigate(['/tasks/new-task']),
+        icon: 'po-icon po-icon-plus-circle'}
+    ]
+
+    this.tableActions = [{
       label: 'Editar', icon: 'po-icon po-icon-edit', action: this.handleEdit.bind(this)
     }]
+
+    this.breadcrumb = {
+      items: [
+        { label: 'Tarefas', link: '/tasks' }
+      ]
+    }
   }
 
   async ngOnInit(): Promise<void> {

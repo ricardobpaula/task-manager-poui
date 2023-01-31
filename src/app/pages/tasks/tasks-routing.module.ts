@@ -1,9 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { FormTaskComponent } from './form-task/form-task.component';
 import { ListTasksComponent } from './list-tasks/list-tasks.component';
 
 const routes: Routes = [
-  { path: '', component: ListTasksComponent}
+  { path: '', component: ListTasksComponent},
+  { path: 'new-task', component: FormTaskComponent},
+  { path: 'edi-task/:id', component: FormTaskComponent}
 ];
 
 @NgModule({
