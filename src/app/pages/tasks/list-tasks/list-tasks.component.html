@@ -1,1 +1,12 @@
-<p>list-tasks works!</p>
+<po-page-dynamic-search
+  p-title="Lista de Tarefas"
+>
+  <po-table
+    [p-columns]="columns"
+    [p-items]="tasks"
+    [p-loading]="isLoading"
+    [p-actions]="actions"
+    [p-actions-right]="true"
+  >
+  </po-table>
+</po-page-dynamic-search>
