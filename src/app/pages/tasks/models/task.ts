@@ -1,6 +1,6 @@
 export interface Task {
-  code: string
   name: string
   description: string
-  done: boolean
+  code?: string
+  done?: boolean
 }

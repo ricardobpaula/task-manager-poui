@@ -6,6 +6,8 @@ Static cTitulo := 'Tarefas'
 User Function XCADSZ1()
   Local oBrowse as Object
 
+  ChkFile("SZ1")
+
   oBrowse := FWMBrowse():New()
   oBrowse:SetAlias("SZ1")
   oBrowse:SetDescription(cTitulo)

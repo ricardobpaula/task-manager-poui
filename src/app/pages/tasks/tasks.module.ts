@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { TasksRoutingModule } from './tasks-routing.module';
 import { ListTasksComponent } from './list-tasks/list-tasks.component';
 import { PoPageDynamicSearchModule } from '@po-ui/ng-templates';
-import { PoTableModule } from '@po-ui/ng-components';
+import { PoDynamicModule, PoTableModule } from '@po-ui/ng-components';
 import { PoPageModule } from '@po-ui/ng-components';
 import { FormTaskComponent } from './form-task/form-task.component';
 
@@ -19,6 +19,7 @@ import { FormTaskComponent } from './form-task/form-task.component';
     PoPageDynamicSearchModule,
     PoTableModule,
     PoPageModule,
+    PoDynamicModule,
     TasksRoutingModule
   ]
 })

@@ -39,7 +39,9 @@ export class ListTasksComponent {
     ]
 
     this.tableActions = [{
-      label: 'Editar', icon: 'po-icon po-icon-edit', action: this.handleEdit.bind(this)
+      label: 'Editar',
+      icon: 'po-icon po-icon-edit',
+      action:(row: any) => this.router.navigate(["tasks/edit-task",row.code])
     }]
 
     this.breadcrumb = {
@@ -57,7 +59,4 @@ export class ListTasksComponent {
       })
   }
 
-  async handleEdit(task: Task) {
-    alert(task.code)
-  }
 }

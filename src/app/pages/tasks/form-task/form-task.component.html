@@ -1,6 +1,15 @@
 <po-page-edit
-  title="Nova Tarefa"
+  [p-title]="title"
   [p-breadcrumb]="breadcrumb"
+  (p-cancel)="handleCancel()"
+  (p-save)="handleSubmit()"
+  [p-literals]="literals"
 >
+<po-dynamic-form
+  #dynamicForm
+  [p-fields]="formFields"
+>
+
+</po-dynamic-form>
 
 </po-page-edit>
