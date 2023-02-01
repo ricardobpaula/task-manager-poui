@@ -1,7 +1,7 @@
   import { Location } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
-import { PoBreadcrumb, PoDynamicFormComponent, PoDynamicFormField, PoPageEditLiterals } from '@po-ui/ng-components';
+import { PoBreadcrumb, PoDynamicFormComponent, PoDynamicFormField, PoNotificationService, PoPageEditLiterals } from '@po-ui/ng-components';
 import { catchError, map, throwError } from 'rxjs';
 import { Task } from '../models/task';
 import { TaskService } from '../services/task.service';
@@ -24,7 +24,8 @@ export class FormTaskComponent implements OnInit {
     private taskService: TaskService,
     private router: Router,
     private route: ActivatedRoute,
-    private location: Location) {
+    private location: Location,
+    private notification: PoNotificationService) {
     this.breadcrumb = {
       items: [
         { label: 'Tarefas', link: '/' },
@@ -36,7 +37,7 @@ export class FormTaskComponent implements OnInit {
 
     this.formFields = [
       { property: 'name', label: 'Nome', required: true, showRequired: true},
-      { property: 'description', label: 'Descrição', gridColumns: 12, gridSmColumns: 12, rows: 5, required: true, showRequired: true},
+      { property: 'description', label: 'Descrição', gridColumns: 12, gridSmColumns: 12, rows: 5},
       { property: 'code', visible: false, required: false},
       { property: 'done', visible: false, required: false, type: 'boolean'}
     ]
@@ -60,7 +61,10 @@ export class FormTaskComponent implements OnInit {
   handleSubmit() {
     this.submit(this.dynamicForm.form.value)
       .subscribe({
-        next: () => this.router.navigate(["/tasks"]),
+        next: () => {
+          this.router.navigate(["/tasks"])
+          this.notification.success("Tarefa salva com sucesso!")
+        },
         error: err => console.log(err)
       })
   }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { PoBreadcrumb, PoPageAction, PoTableAction, PoTableColumn } from '@po-ui/ng-components';
+import { PoBreadcrumb, PoDialogService, PoPageAction, PoTableAction, PoTableColumn } from '@po-ui/ng-components';
 import { Task } from '../models/task';
 import { TaskService } from '../services/task.service';
 
@@ -20,7 +20,8 @@ export class ListTasksComponent {
 
   constructor(
     private taskService: TaskService,
-    private router: Router) {
+    private router: Router,
+    private alert: PoDialogService) {
     this.tasks = []
     this.isLoading = true
 
@@ -47,7 +48,7 @@ export class ListTasksComponent {
       {
         label: 'Excluir',
         icon: 'po-icon po-icon-delete',
-        action:(row: any) => this.handleDelete(row.code)
+        action:(row: any) => this.handleDelete(row)
       }
     ]
 
@@ -58,12 +59,19 @@ export class ListTasksComponent {
     }
   }
 
-  handleDelete(id: string) {
+  handleDelete(task: Task) {
     this.isLoading = true
-    this.taskService.delete(id)
-      .subscribe({
-        next: () => this.loadTasks()
-      })
+    this.alert.confirm({
+      title: 'Excluir tarefa',
+      message: `Tem certeza que deseja excluir tarefa: ${task.name}`,
+      confirm: () => this.taskService.delete(task.code || '')
+          .subscribe({
+            next: () => this.loadTasks()
+          }),
+      cancel: () => this.isLoading = false,
+      literals: {confirm: 'Excluir', cancel: 'Cancelar'}
+    })
+
   }
 
   loadTasks() {

@@ -25,12 +25,17 @@ Class TaskController
   @Put("/v1/tasks/:id")
   Public Method Update()
 
+  Private Method Start()
   Private Method Destroy()
 EndClass
 
 Method New() Class TaskController
-  ::oService := TaskService():New()
 return
+
+Method Start() Class TaskController
+  ::oService := nil
+  ::oService := TaskService():New()
+return nil
 
 Method Destroy() Class TaskController
   FreeObj(::oService)
@@ -43,6 +48,7 @@ Method Create() Class TaskController
 
   jBody:FromJson(oRest:GetBodyRequest())
 
+  ::Start()
   jResult := ::oService:CreateOrUpdate(jBody)
 
   If jResult['error']
@@ -69,6 +75,7 @@ Method Update() Class TaskController
 
   jBody:FromJson(oRest:GetBodyRequest())
 
+  ::Start()
   jPath := oRest:getPathParamsRequest()
 
   if len(jPath["id"]) == TamSx3("Z1_CODIGO")[1]
@@ -96,6 +103,7 @@ return
 Method List() Class TaskController
   Local jResponse as Json
 
+  ::Start()
   jResponse := ::oService:List()
 
   oRest:SetResponse(jResponse:ToJson())
@@ -111,6 +119,7 @@ Method Get() Class TaskController
   Local jResult as Json
   Local jPath as Json
 
+  ::Start()
   jPath := oRest:getPathParamsRequest()
 
   if len(jPath["id"]) == TamSx3("Z1_CODIGO")[1]
@@ -139,6 +148,7 @@ Method Delete() Class TaskController
   Local jResult as Json
   Local jPath as Json
 
+  ::Start()
   jPath := oRest:getPathParamsRequest()
 
   if len(jPath["id"]) == TamSx3("Z1_CODIGO")[1]
