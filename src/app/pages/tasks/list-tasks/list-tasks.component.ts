@@ -26,7 +26,7 @@ export class ListTasksComponent {
 
     this.columns = [
       { label: 'Nome', property: 'name', width: '70%'},
-      { label: 'Concluido',property: 'done', type: 'boolean',
+      { label: 'Concluido',property: 'done', type: 'boolean', width: '20%',
         boolean: { trueLabel: 'Concluido', falseLabel: 'Pendente' }
       }
     ]
@@ -38,11 +38,18 @@ export class ListTasksComponent {
         icon: 'po-icon po-icon-plus-circle'}
     ]
 
-    this.tableActions = [{
-      label: 'Editar',
-      icon: 'po-icon po-icon-edit',
-      action:(row: any) => this.router.navigate(["tasks/edit-task",row.code])
-    }]
+    this.tableActions = [
+      {
+        label: 'Editar',
+        icon: 'po-icon po-icon-edit',
+        action:(row: any) => this.router.navigate(["tasks/edit-task",row.code])
+      },
+      {
+        label: 'Excluir',
+        icon: 'po-icon po-icon-delete',
+        action:(row: any) => this.handleDelete(row.code)
+      }
+    ]
 
     this.breadcrumb = {
       items: [
@@ -51,12 +58,24 @@ export class ListTasksComponent {
     }
   }
 
-  async ngOnInit(): Promise<void> {
-    this.taskService.list()
-      .subscribe(tasks => {
-        this.tasks = tasks
-        this.isLoading = false
+  handleDelete(id: string) {
+    this.isLoading = true
+    this.taskService.delete(id)
+      .subscribe({
+        next: () => this.loadTasks()
       })
+  }
+
+  loadTasks() {
+    this.taskService.list()
+    .subscribe(tasks => {
+      this.tasks = tasks
+      this.isLoading = false
+    })
+  }
+
+  async ngOnInit(): Promise<void> {
+    this.loadTasks()
   }
 
 }
