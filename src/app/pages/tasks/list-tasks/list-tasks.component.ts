@@ -41,6 +41,11 @@ export class ListTasksComponent {
 
     this.tableActions = [
       {
+        label: 'Concluir',
+        icon: 'po-icon po-icon-ok',
+        action:(row: any) => this.handleComplete(row)
+      },
+      {
         label: 'Editar',
         icon: 'po-icon po-icon-edit',
         action:(row: any) => this.router.navigate(["tasks/edit-task",row.code])
@@ -71,7 +76,33 @@ export class ListTasksComponent {
       cancel: () => this.isLoading = false,
       literals: {confirm: 'Excluir', cancel: 'Cancelar'}
     })
+  }
 
+  handleComplete(task: Task) {
+    if (task.done) {
+      return this.alert.alert({
+        title: 'Tarefa concluida',
+        message: 'Tarefa já está concluida!',
+        literals: { ok: 'Confirmar' }
+      })
+    }
+
+    this.isLoading = true
+    this.alert.confirm({
+      title: 'Concluir tarefa',
+      message: `Tem certeza que deseja concluir tarefa: ${task.name}`,
+      confirm: () => this.taskService.update({
+        code: task.code,
+        name: task.name,
+        description: task.description,
+        done: true
+      },task.code || '')
+          .subscribe({
+            next: () => this.loadTasks()
+          }),
+      cancel: () => this.isLoading = false,
+      literals: {confirm: 'Concluir', cancel: 'Cancelar'}
+    })
   }
 
   loadTasks() {
