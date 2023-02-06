@@ -21,7 +21,8 @@ Method CreateOrUpdate(jTask as Json, cId as Character) Class TaskService
   Local oModel    := FwLoadModel("XCADSZ1") as Object
   Local oModelSZ1 := oModel:GetModel("SZ1MASTER") as Object
   Local jResult   := JsonObject():New() as Json
-  Local lError    := .F.
+  Local lError    := .F. as Logical
+  Local cError    := "" as Character
   Default cId     := nil
 
   if cId == nil
@@ -30,7 +31,14 @@ Method CreateOrUpdate(jTask as Json, cId as Character) Class TaskService
     DbSelectArea("SZ1")
     SZ1->(DbSetOrder(1))
     SZ1->(DbGoTop())
-    lError := !SZ1->(MsSeek(FWxFilial("SZ1") + cId))
+
+    If !SZ1->(MsSeek(FWxFilial("SZ1") + cId))
+      lError := .T.
+      cError := "Tarefa não encontrada!"
+    elseif SZ1->Z1_FEITO
+      lError := .T.
+      cError := "Tarefa já concluída!"
+    endif
     oModel:SetOperation(4)
   endif
 
@@ -40,6 +48,7 @@ Method CreateOrUpdate(jTask as Json, cId as Character) Class TaskService
     if cId != nil
       oModelSZ1:SetValue("Z1_CODIGO", jTask['code'])
       oModelSZ1:SetValue("Z1_FEITO", jTask['done'])
+      oModelSZ1:SetValue("Z1_DTFIM", iif(jTask['done'],Date(),nil))
     endif
 
     oModelSZ1:SetValue("Z1_NOME", jTask['name'])
@@ -56,7 +65,7 @@ Method CreateOrUpdate(jTask as Json, cId as Character) Class TaskService
 
   else
     jResult['error'] := .T.
-    jResult['message'] := "Tarefa não encontrada!"
+    jResult['message'] := cError
   endif
 
   FreeObj(oModel)
@@ -74,7 +83,7 @@ Method List() Class TaskService
   Local jResult := JsonObject():New() as Json
   Local aResult := {} as Array
 
-  cQuery := "SELECT		Z1_CODIGO, Z1_NOME, Z1_FEITO" + c_ent
+  cQuery := "SELECT		Z1_CODIGO, Z1_NOME, Z1_FEITO, Z1_DTFIM" + c_ent
   cQuery += "FROM		  SZ1990 " + c_ent
   cQuery += "WHERE		D_E_L_E_T_ <> '*' " + c_ent
 
@@ -85,7 +94,8 @@ Method List() Class TaskService
       "code": (cAlias)->(Z1_CODIGO),;
       "name": AllTrim((cAlias)->(Z1_NOME)),;
       "description": "",;
-      "done": (cAlias)->(Z1_FEITO) == "T";
+      "done": (cAlias)->(Z1_FEITO) == "T",;
+      "dateDone": If(!Empty((cAlias)->(Z1_DTFIM)),STOD((cAlias)->(Z1_DTFIM)),nil);
     })
     (cAlias)->(DbSkip())
   enddo
@@ -114,6 +124,7 @@ Method Get(cId as Character) Class TaskService
     jResult['name']         := AllTrim(SZ1->Z1_NOME)
     jResult['description']  := AllTrim(SZ1->Z1_DESC)
     jResult['done']         := SZ1->Z1_FEITO
+    jResult['dateDone']     := iif(!Empty(SZ1->Z1_DTFIM),SZ1->Z1_DTFIM,nil)
   endif
 
   SZ1->(DbCloseArea())
