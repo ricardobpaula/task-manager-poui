@@ -2,10 +2,12 @@
   p-title="Lista de Tarefas"
   [p-actions]="pageActions"
   [p-breadcrumb]="breadcrumb"
+  (p-quick-search)="onQuickFilter($event)"
+  (p-change-disclaimers)="onChangeDisclaimers($event)"
 >
   <po-table
     [p-columns]="columns"
-    [p-items]="tasks"
+    [p-items]="taskFiltered"
     [p-loading]="isLoading"
     [p-actions]="tableActions"
     [p-actions-right]="true"

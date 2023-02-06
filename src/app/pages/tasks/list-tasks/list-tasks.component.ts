@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { PoBreadcrumb, PoDialogService, PoPageAction, PoTableAction, PoTableColumn } from '@po-ui/ng-components';
+import { PoPageDynamicSearchFilters } from '@po-ui/ng-templates';
 import { Task } from '../models/task';
 import { TaskService } from '../services/task.service';
 
@@ -12,6 +13,7 @@ import { TaskService } from '../services/task.service';
 export class ListTasksComponent {
 
   public tasks: Task[]
+  public taskFiltered: Task[]
   public columns: PoTableColumn[]
   public isLoading: boolean
   public pageActions: PoPageAction[]
@@ -23,12 +25,16 @@ export class ListTasksComponent {
     private router: Router,
     private alert: PoDialogService) {
     this.tasks = []
+    this.taskFiltered = []
     this.isLoading = true
 
     this.columns = [
-      { label: 'Nome', property: 'name', width: '70%'},
-      { label: 'Concluido',property: 'done', type: 'boolean', width: '20%',
+      { label: 'Nome', property: 'name', width: '50%'},
+      { label: 'Concluido',property: 'done', type: 'boolean', width: '15%',
         boolean: { trueLabel: 'Concluido', falseLabel: 'Pendente' }
+      },
+      {
+        label: 'Concluido em', property: 'dateDone', type: 'date', width: '25%'
       }
     ]
 
@@ -48,7 +54,7 @@ export class ListTasksComponent {
       {
         label: 'Editar',
         icon: 'po-icon po-icon-edit',
-        action:(row: any) => this.router.navigate(["tasks/edit-task",row.code])
+        action:(row: any) => this.handleUpdate(row)
       },
       {
         label: 'Excluir',
@@ -65,6 +71,10 @@ export class ListTasksComponent {
   }
 
   handleDelete(task: Task) {
+    if (task.done) {
+      return this.alertTaskDone()
+    }
+
     this.isLoading = true
     this.alert.confirm({
       title: 'Excluir tarefa',
@@ -78,13 +88,17 @@ export class ListTasksComponent {
     })
   }
 
+  handleUpdate(task: Task) {
+    if (task.done) {
+      return this.alertTaskDone()
+    }
+
+    this.router.navigate(["tasks/edit-task",task.code])
+  }
+
   handleComplete(task: Task) {
     if (task.done) {
-      return this.alert.alert({
-        title: 'Tarefa concluida',
-        message: 'Tarefa já está concluida!',
-        literals: { ok: 'Confirmar' }
-      })
+      return this.alertTaskDone()
     }
 
     this.isLoading = true
@@ -105,16 +119,37 @@ export class ListTasksComponent {
     })
   }
 
+  alertTaskDone() {
+      this.alert.alert({
+        title: 'Tarefa concluida',
+        message: 'Tarefa já está concluida!',
+        literals: { ok: 'Confirmar' }
+      })
+  }
+
   loadTasks() {
     this.taskService.list()
     .subscribe(tasks => {
       this.tasks = tasks
+      this.taskFiltered = this.tasks
       this.isLoading = false
     })
   }
 
+  onQuickFilter(filter: string) {
+    this.taskFiltered = filter
+      ? this.tasks.filter(task => task.name.includes(filter))
+      : this.tasks
+  }
+
   async ngOnInit(): Promise<void> {
     this.loadTasks()
+  }
+
+  onChangeDisclaimers(disclaimers: any[]) {
+    if (disclaimers.length === 0) {
+      this.taskFiltered = this.tasks
+    }
   }
 
 }
