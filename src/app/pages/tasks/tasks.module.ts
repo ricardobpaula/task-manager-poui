@@ -4,15 +4,17 @@ import { CommonModule } from '@angular/common';
 import { TasksRoutingModule } from './tasks-routing.module';
 import { ListTasksComponent } from './list-tasks/list-tasks.component';
 import { PoPageDynamicSearchModule } from '@po-ui/ng-templates';
-import { PoDynamicModule, PoNotificationModule, PoTableModule } from '@po-ui/ng-components';
+import { PoDynamicModule, PoNotificationModule, PoTableModule, PoChartModule, PoWidgetModule  } from '@po-ui/ng-components';
 import { PoPageModule } from '@po-ui/ng-components';
 import { FormTaskComponent } from './form-task/form-task.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 
 @NgModule({
   declarations: [
     ListTasksComponent,
-    FormTaskComponent
+    FormTaskComponent,
+    DashboardComponent
   ],
   imports: [
     CommonModule,
@@ -21,7 +23,9 @@ import { FormTaskComponent } from './form-task/form-task.component';
     PoPageModule,
     PoDynamicModule,
     PoNotificationModule,
-    TasksRoutingModule
+    TasksRoutingModule,
+    PoChartModule,
+    PoWidgetModule
   ]
 })
 export class TasksModule { }

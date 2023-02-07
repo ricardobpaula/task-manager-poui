@@ -25,6 +25,9 @@ Class TaskController
   @Put("/v1/tasks/:id")
   Public Method Update()
 
+  @Get("/v1/tasks/reports/resume")
+  Public Method Resume()
+
   Private Method Start()
   Private Method Destroy()
 EndClass
@@ -171,4 +174,17 @@ Method Delete() Class TaskController
   FreeObj(jResult)
   FreeObj(jPath)
 
+return
+
+Method Resume() Class TaskController
+  Local jResponse as Json
+
+  ::Start()
+  jResponse := ::oService:Resume()
+
+  oRest:SetResponse(jResponse:ToJson())
+  oRest:SetStatusCode(200)
+
+  ::Destroy()
+  FreeObj(jResponse)
 return

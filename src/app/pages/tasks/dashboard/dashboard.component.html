@@ -1,0 +1,25 @@
+<po-page-default>
+      <po-chart
+      p-title="Resumo de atividades realizadas por periodo"
+      [p-categories]="categories"
+      [p-series]="data"
+    >
+    </po-chart>
+
+    <po-chart
+      p-title="Resumo de atividades realizadas totais"
+      [p-series]="resumePizza"
+    >
+</po-chart>
+
+    <po-widget [p-height]="198">
+      <div class="po-font-title po-text-center po-pt-5">{{resume.done}} Atividades</div>
+      <div class="po-text-center">Quantidade de atividade concluidas no periodo</div>
+    </po-widget>
+
+    <po-widget [p-height]="198">
+      <div class="po-font-title po-text-center po-pt-5">{{resume.undone}} Atividades</div>
+      <div class="po-text-center">Quantidade de atividade não concluidas no periodo</div>
+    </po-widget>
+
+</po-page-default>

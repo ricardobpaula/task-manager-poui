@@ -8,6 +8,7 @@ Class TaskService
   Public Method New() Constructor
   Public Method CreateOrUpdate(jTask as Json, cId as Character)
   Public Method List()
+  Public Method Resume()
   Public Method Get(cId as Character)
   Public Method Delete(cId as Character)
 EndClass
@@ -48,11 +49,11 @@ Method CreateOrUpdate(jTask as Json, cId as Character) Class TaskService
     if cId != nil
       oModelSZ1:SetValue("Z1_CODIGO", jTask['code'])
       oModelSZ1:SetValue("Z1_FEITO", jTask['done'])
-      oModelSZ1:SetValue("Z1_DTFIM", iif(jTask['done'],Date(),nil))
     endif
 
     oModelSZ1:SetValue("Z1_NOME", jTask['name'])
     oModelSZ1:SetValue("Z1_DESC", jTask['description'])
+    oModelSZ1:SetValue("Z1_DATA", FwDateTimeToLocal(jTask['date'])[1])
 
     If oModel:VldData() .And. oModel:CommitData()
       jResult['error'] := .F.
@@ -83,9 +84,10 @@ Method List() Class TaskService
   Local jResult := JsonObject():New() as Json
   Local aResult := {} as Array
 
-  cQuery := "SELECT		Z1_CODIGO, Z1_NOME, Z1_FEITO, Z1_DTFIM" + c_ent
+  cQuery := "SELECT		Z1_CODIGO, Z1_NOME, Z1_FEITO, Z1_DATA" + c_ent
   cQuery += "FROM		  SZ1990 " + c_ent
   cQuery += "WHERE		D_E_L_E_T_ <> '*' " + c_ent
+  cQuery += "ORDER BY Z1_DATA ASC" + c_ent
 
   cAlias := MpSysOpenQuery(cQuery)
 
@@ -95,7 +97,7 @@ Method List() Class TaskService
       "name": AllTrim((cAlias)->(Z1_NOME)),;
       "description": "",;
       "done": (cAlias)->(Z1_FEITO) == "T",;
-      "dateDone": If(!Empty((cAlias)->(Z1_DTFIM)),STOD((cAlias)->(Z1_DTFIM)),nil);
+      "date": STOD((cAlias)->(Z1_DATA));
     })
     (cAlias)->(DbSkip())
   enddo
@@ -124,7 +126,7 @@ Method Get(cId as Character) Class TaskService
     jResult['name']         := AllTrim(SZ1->Z1_NOME)
     jResult['description']  := AllTrim(SZ1->Z1_DESC)
     jResult['done']         := SZ1->Z1_FEITO
-    jResult['dateDone']     := iif(!Empty(SZ1->Z1_DTFIM),SZ1->Z1_DTFIM,nil)
+    jResult['date']         := SZ1->Z1_DATA
   endif
 
   SZ1->(DbCloseArea())
@@ -163,6 +165,40 @@ Method Delete(cId as Character) Class TaskService
   oModel:DeActivate()
 
   FreeObj(oModel)
+  FWRestArea(aArea)
+  FWRestArea(aAreaSZ1)
+return jResult
+
+Method Resume() Class TaskService
+  Local aArea := FWGetArea() as Array
+  Local aAreaSZ1 := SZ1->(FWGetArea()) as Array
+  Local cQuery as Character
+  Local cAlias as Character
+  Local jResult := JsonObject():New() as Json
+  Local aResult := {} as Array
+
+  cQuery := "SELECT		SUM(CASE WHEN Z1_FEITO = 'T' THEN 1 ELSE 0 END) DONE, "           + c_ent
+  cQuery += "         SUM(CASE WHEN Z1_FEITO = 'F' THEN 1 ELSE 0 END) UNDONE, "         + c_ent
+  cQuery += "         SUBSTRING(Z1_DATA,5,2) + '/' + SUBSTRING(Z1_DATA,1,4) PERIOD "    + c_ent
+  cQuery += "FROM		  " + RetSqlName("SZ1") + " SZ1 "                                   + c_ent
+  cQuery += "WHERE		D_E_L_E_T_ <> '*' "                                               + c_ent
+  cQuery += "GROUP BY	SUBSTRING(Z1_DATA,5,2) + '/' + SUBSTRING(Z1_DATA,1,4)"            + c_ent
+
+  cAlias := MpSysOpenQuery(cQuery)
+
+  while (cAlias)->(!EOF())
+    aadd(aResult, {;
+      "period": (cAlias)->(PERIOD),;
+      "done": (cAlias)->(DONE),;
+      "undone": (cAlias)->(UNDONE);
+    })
+    (cAlias)->(DbSkip())
+  enddo
+
+  (cAlias)->(DbCloseArea())
+
+  jResult:Set(aResult)
+
   FWRestArea(aArea)
   FWRestArea(aAreaSZ1)
 return jResult

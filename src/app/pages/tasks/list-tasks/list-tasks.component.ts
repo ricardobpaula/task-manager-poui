@@ -30,12 +30,9 @@ export class ListTasksComponent {
 
     this.columns = [
       { label: 'Nome', property: 'name', width: '50%'},
-      { label: 'Concluido',property: 'done', type: 'boolean', width: '15%',
-        boolean: { trueLabel: 'Concluido', falseLabel: 'Pendente' }
-      },
-      {
-        label: 'Concluido em', property: 'dateDone', type: 'date', width: '25%'
-      }
+      { label: 'Data', property: 'date', type: 'date', width: '25%' },
+      { label: 'Concluido',property: 'done', type: 'boolean', width: '15%', boolean: {
+        trueLabel: 'Concluido', falseLabel: 'Pendente' } }
     ]
 
     this.pageActions = [
@@ -96,21 +93,18 @@ export class ListTasksComponent {
     this.router.navigate(["tasks/edit-task",task.code])
   }
 
-  handleComplete(task: Task) {
-    if (task.done) {
+  handleComplete({ code, date, description, name, done }: Task) {
+    if (done) {
       return this.alertTaskDone()
     }
 
     this.isLoading = true
     this.alert.confirm({
       title: 'Concluir tarefa',
-      message: `Tem certeza que deseja concluir tarefa: ${task.name}`,
+      message: `Tem certeza que deseja concluir tarefa: ${name}`,
       confirm: () => this.taskService.update({
-        code: task.code,
-        name: task.name,
-        description: task.description,
-        done: true
-      },task.code || '')
+        code, name, description, date, done: true
+      },code || '')
           .subscribe({
             next: () => this.loadTasks()
           }),

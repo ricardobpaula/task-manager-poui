@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Task } from '../models/task';
+import { TaskResume } from '../models/task-resume';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,11 @@ export class TaskService {
     })
   }
 
-  create (task: Task):Observable<void> {
+  create ({ code, date, description, name, done }: Task):Observable<void> {
+    const task = {
+      code, description, name, done, date: new Date(date).toISOString().slice(0,10)
+    }
+
     const headers = new HttpHeaders({
       Authorization: environment.token
     })
@@ -42,7 +47,11 @@ export class TaskService {
       { headers })
   }
 
-  update (task: Task, id: string):Observable<void> {
+  update ({ code, date, description, name, done }: Task, id: string):Observable<void> {
+    const task = {
+      code, description, name, done, date: new Date(date).toISOString().slice(0,10)
+    }
+
     const headers = new HttpHeaders({
       Authorization: environment.token
     })
@@ -59,5 +68,15 @@ export class TaskService {
 
     return this.httpClient.delete<void>(`${this.API}/${id}`,
     { headers })
+  }
+
+  resume ():Observable<TaskResume[]> {
+    const headers = new HttpHeaders({
+      Authorization: environment.token
+    })
+
+    return this.httpClient.get<TaskResume[]>(`${this.API}/reports/resume`, {
+      headers
+    })
   }
 }

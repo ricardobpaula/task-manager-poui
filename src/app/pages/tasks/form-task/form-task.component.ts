@@ -36,10 +36,11 @@ export class FormTaskComponent implements OnInit {
     this.literals = { save: 'Salvar', cancel: 'Cancelar' }
 
     this.formFields = [
-      { property: 'name', label: 'Nome', required: true, showRequired: true},
-      { property: 'description', label: 'Descrição', gridColumns: 12, gridSmColumns: 12, rows: 5},
+      { property: 'name', label: 'Nome', required: true, showRequired: true },
+      { property: 'date', visible: true, required: true, showRequired: true, type: 'date' },
+      { property: 'description', label: 'Descrição', gridColumns: 12, gridSmColumns: 12, rows: 5 },
       { property: 'code', visible: false, required: false},
-      { property: 'done', visible: false, required: false, type: 'boolean'}
+      { property: 'done', visible: false, required: false, type: 'boolean' }
     ]
   }
 
