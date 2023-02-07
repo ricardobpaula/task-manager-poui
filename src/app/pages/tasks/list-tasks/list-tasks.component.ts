@@ -32,8 +32,8 @@ export class ListTasksComponent {
       { label: 'Status', property: 'done', width: '15%',
         type: 'label',
           labels: [
-            { value: true, color: 'color-11', label: 'Concluido',  },
-            { value: false, color: 'color-08', label: 'Pendente' }
+            { value: true as any, color: 'color-11', label: 'Concluido',  },
+            { value: false as any, color: 'color-08', label: 'Pendente' }
           ]
       },
       { label: 'Nome', property: 'name', width: '50%'},
