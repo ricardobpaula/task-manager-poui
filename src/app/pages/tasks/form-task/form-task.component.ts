@@ -50,7 +50,8 @@ export class FormTaskComponent implements OnInit {
       this.title = "Editar Tarefa"
       this.taskService.get(this.id)
         .subscribe(task => {
-          this.dynamicForm.value = task
+          const { date , description, name, code, done } = task
+          this.dynamicForm.value = { date: new Date(date), description, name, code, done }
         })
     }
   }
