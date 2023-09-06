@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
+import { ProtheusLibCoreModule } from '@totvs/protheus-lib-core';
 import { PoTemplatesModule } from '@po-ui/ng-templates';
 
 @NgModule({
@@ -18,6 +19,7 @@ import { PoTemplatesModule } from '@po-ui/ng-templates';
     PoModule,
     RouterModule.forRoot([]),
     HttpClientModule,
+    ProtheusLibCoreModule,
     PoTemplatesModule
   ],
   providers: [],

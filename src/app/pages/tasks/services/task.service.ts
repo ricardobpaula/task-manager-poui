@@ -11,72 +11,37 @@ import { TaskResume } from '../models/task-resume';
 export class TaskService {
 
   private readonly API = `${environment.baseUrl}/v1/tasks`
+  private readonly headers = new HttpHeaders({ Authorization: environment.token })
+
   constructor(private httpClient: HttpClient) { }
 
   list ():Observable<Task[]> {
-    const headers = new HttpHeaders({
-      Authorization: environment.token
-    })
-
-    return this.httpClient.get<Task[]>(this.API, {
-      headers
-    })
+    return this.httpClient.get<Task[]>(this.API, { headers: this.headers })
   }
 
   get (id: string):Observable<Task> {
-    const headers = new HttpHeaders({
-      Authorization: environment.token
-    })
-
-    return this.httpClient.get<Task>(`${this.API}/${id}`, {
-      headers
-    })
+    return this.httpClient.get<Task>(`${this.API}/${id}`, { headers: this.headers })
   }
 
   create ({ code, date, description, name, done }: Task):Observable<void> {
     const task = {
       code, description, name, done, date: new Date(date).toISOString().slice(0,10)
     }
-
-    const headers = new HttpHeaders({
-      Authorization: environment.token
-    })
-
-    return this.httpClient.post<any>(this.API,
-      task,
-      { headers })
+    return this.httpClient.post<any>(this.API, task, { headers: this.headers })
   }
 
   update ({ code, date, description, name, done }: Task, id: string):Observable<void> {
     const task = {
       code, description, name, done, date: new Date(date).toISOString().slice(0,10)
     }
-
-    const headers = new HttpHeaders({
-      Authorization: environment.token
-    })
-
-    return this.httpClient.put<any>(`${this.API}/${id}`,
-    task,
-    { headers })
+    return this.httpClient.put<any>(`${this.API}/${id}`, task, { headers: this.headers })
   }
 
   delete (id: string):Observable<any> {
-    const headers = new HttpHeaders({
-      Authorization: environment.token
-    })
-
-    return this.httpClient.delete<void>(`${this.API}/${id}`,
-    { headers })
+    return this.httpClient.delete<void>(`${this.API}/${id}`, { headers: this.headers })
   }
 
   resume ():Observable<TaskResume[]> {
-    const headers = new HttpHeaders({
-      Authorization: environment.token
-    })
-
-    return this.httpClient.get<TaskResume[]>(`${this.API}/reports/resume`, {
-      headers
-    })
+    return this.httpClient.get<TaskResume[]>(`${this.API}/reports/resume`, { headers: this.headers })
   }
 }

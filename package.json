@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./build.ps1",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -21,7 +21,9 @@
     "@po-ui/ng-components": "15.0.0",
     "@po-ui/ng-templates": "15.0.0",
     "@totvs/po-theme": "^15.0.0",
+    "@totvs/protheus-lib-core": "^15.0.0",
     "rxjs": "~7.5.5",
+    "subsink": "^1.0.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"
   },
