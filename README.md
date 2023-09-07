@@ -12,7 +12,7 @@
 
 ## Pre requisitos
 
-1 - Para utilização desse projeto é necessario que o ambiente esteja com MULTIPROTOCOL ativo;
+1 - Para utilização desse projeto é necessario que o ambiente esteja com MULTIPROTOCOLPORT = 1;
 
 ## Testar Projeto
 
